@@ -17,6 +17,28 @@ public class HashStringSet {
 		size = 0;
 	}
 
+	public double getEfficiencyFactor(){
+		double averageSize = size/buckets;
+		double length = 0;
+		double efficiency = 0;
+
+		for(Node node: elementData){
+			while(node != null){
+				node = node.next;
+				length++;
+			}
+			efficiency += Math.pow(length-averageSize, 2);
+		}
+		return efficiency/buckets;
+	}
+
+	public void printInfo(){
+		System.out.println("Efficiency Factor: " + getEfficiencyFactor());
+		System.out.println("buckets " + buckets);
+		System.out.println("words: " + size);
+		System.out.println("Load Factor: " + MAX_LOAD);
+	}
+
 	// Constructs a new set of integers.
 	@SuppressWarnings("unchecked")
 	public HashStringSet(String... values) {
