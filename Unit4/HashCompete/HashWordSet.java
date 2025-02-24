@@ -126,7 +126,7 @@ public class HashWordSet {
 
         for (char c : word.toCharArray()) {
             hashValue = (hashValue + (c - 'a' + 1) * power) % BUCKETS;
-            power = (power * 71) % BUCKETS;
+            power = (power * 199) % BUCKETS;
         }
         return (int) ((hashValue + BUCKETS) % BUCKETS);
     }
