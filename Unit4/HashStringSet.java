@@ -52,6 +52,7 @@ public class HashStringSet {
 	// if it was not already contained in the set.
 	public void add(String value) {
 		// linear probing to find proper index
+		value = normalize(value);
 		if (!contains(value)) {
 			int h = hash(value);
 			Node newNode = new Node(value);
@@ -69,6 +70,19 @@ public class HashStringSet {
 	// Returns true if o refers to another HashIntSet with the same elementData as this set.
 	public boolean equals(Object o) {
 		return equalsIgnoringSize(o) && size == ((HashStringSet) o).size();
+	}
+
+	private static String normalize(String word) {
+		String specialChars = " ~!@#$%^&*()_+`-={}[]|\\:\";'<>?,./â€œâ€�â„¢";
+		int i = 0;
+		while (i < word.length() && specialChars.indexOf("" + word.charAt(i)) != -1) {
+			i++;
+		}
+		int j = word.length() - 1;
+		while (j > i && specialChars.indexOf("" + word.charAt(j)) != -1) {
+			j--;
+		}
+		return word.substring(i, j + 1).toUpperCase();
 	}
 
 	// Returns true if o refers to another HashStringSet with the same elementData as this set,
@@ -206,9 +220,14 @@ public class HashStringSet {
 
 	// hash function for mapping values to indexes
 	private int hash(String value) {
-        //int hashValue = value.length();
-		int hashValue = value.hashCode();
-		return Math.abs(hashValue) % elementData.length;
+        long hashValue = 0;
+		long power = 1;
+
+		for (char c : value.toCharArray()) {
+			hashValue = (hashValue + (c - 'a' + 1) * power) % buckets;
+			power = (power * 199) % buckets;
+		}
+		return (int) ((hashValue + buckets) % buckets);
 	}
 
 	// Resizes the hash table to twice its original capacity.

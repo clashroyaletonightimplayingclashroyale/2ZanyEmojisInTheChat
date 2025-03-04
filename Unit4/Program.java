@@ -24,9 +24,6 @@ public class Program {
 
         while(urlScan.hasNext()){
             String curWord = urlScan.next().toLowerCase();
-            if(containsSpecialCharacters(curWord)){
-                removeSpecialCharacters(curWord);
-            }
             set.add(curWord);
             
         }
@@ -34,20 +31,6 @@ public class Program {
         set.printInfo();
         urlScan.close();
 
-    }
-
-    public static boolean containsSpecialCharacters(String input) {
-        String specialCharacters = "!@#$%^&*()_+-=[]{}|;:',.<>?/~`";
-        for (int i = 0; i < specialCharacters.length(); i++) {
-            if (input.contains(String.valueOf(specialCharacters.charAt(i)))) {
-                return true; 
-            }
-        }
-        return false; 
-    }
-    
-    public static String removeSpecialCharacters(String input) {
-        return input.replaceAll("[^a-zA-Z0-9]", "");
     }
     
 }
