@@ -1,4 +1,4 @@
-package Unit4.HashCompete;
+package HashCompete;
 
 import java.io.File;
 import java.io.IOException;

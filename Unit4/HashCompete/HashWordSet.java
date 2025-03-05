@@ -1,4 +1,4 @@
-package Unit4.HashCompete;
+package HashCompete;
 
 /**
  * A HashWordSet object represents a set words using a simplified hash table as
