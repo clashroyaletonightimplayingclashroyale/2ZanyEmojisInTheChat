@@ -1,5 +1,12 @@
 package Unit5.main;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -110,6 +117,12 @@ public class Graph<T extends Comparable<T>> {
     public void removeEdge(T from, T to) {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
+        Node<T> fromNode = _nodes.get(from.hashCode());
+        Node<T> toNode = _nodes.get(to.hashCode());
+        if (fromNode == null || toNode == null) {
+            throw new RuntimeException("Node(s) not in the graph!");
+        }
+        fromNode.removeEdge(toNode);
         
     }
     
@@ -123,7 +136,15 @@ public class Graph<T extends Comparable<T>> {
     public void removeNode(T data) {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
+        Node<T> toRemove = _nodes.get(data.hashCode());
+        if(toRemove == null) return;
+        for(Node<T> n : _nodes.values()){
+            removeEdge(n.getData(), data);
+        }
+        _nodes.remove(data.hashCode());
+        
     }
+
 
     /**
      * Checks if the Graph is undirected.
@@ -132,17 +153,58 @@ public class Graph<T extends Comparable<T>> {
     public boolean isUGraph() {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
-        return false;
+
+        //for all the nodes in the map
+        for(Node<T> node: _nodes.values()){  
+            //for that nodes neighbor
+            for(Node<T> neighbor : node.getNeighbors()){
+                //if the neighbors neighbor list does not contain the current node we are looking at then return false
+                if (!neighbor.getNeighbors().contains(node)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
+
     /**
-     * Checks is the Graph is connected.
+     * Checks if the Graph is connected.
      * @return true if the Graph is connected, false otherwise.
      */
     public boolean isConnected() {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
-        return false;
+
+        //if empty return true;
+        int size = _nodes.size();
+        if(size == 0){
+            return true;
+        }
+
+        //visited nodes
+        Set<Node<T>> visited = new HashSet();
+        //queue for traversing graph
+        Queue<Node<T>> queue = new LinkedList<>();
+        //arraylist to add random starting node
+        List<Node<T>> list = new ArrayList<>(_nodes.values());
+        queue.add(list.get(0));
+
+        //while there are still items in the queue
+        while(!queue.isEmpty()){
+            //look at current one
+            Node<T> current = queue.remove();
+            //add current to the visited
+            visited.add(current);
+            //add the neighbors (if not already visited) to the queue
+            Set<Node<T>> neighbors = current.getNeighbors();
+            for(Node<T> neighbor: neighbors){
+                if(!visited.contains(neighbor)){
+                    queue.add(neighbor);
+                }
+            }
+        }
+        return size == visited.size();
     }
 
     /**
@@ -152,7 +214,9 @@ public class Graph<T extends Comparable<T>> {
     public boolean isDAGraph() {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
-        return false;
+
+        //use depth first search. Check whether there is a cycle through going through every possible combination and storing the path you've taken 
+        //if at any point the current one's neighbor is one of the ones that you've already visited, there must be a cycle, rendering the function false.
     }
 
     /**

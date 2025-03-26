@@ -1,6 +1,8 @@
 package Unit5.main;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class definition for a generic Node in a Graph.
@@ -88,6 +90,16 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
     public void reset() {
         _state = 0;
     }
+
+
+    public Set<Node<T>> getNeighbors(){
+        Set<Node<T>> set = new HashSet<>();
+        for(Node<T> node : _edges.values()){
+            set.add(node);
+        }
+
+        return set;
+    }
     
     /**
      * Adds a new directed graph Edge linking this Node to the otherNode.
@@ -99,13 +111,12 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
     }
 
     /**
-     * Revmoves a directed graph Edge linking this Node to the otherNode
-     * 
+     * Removes a directed graph Edge linking this Node to the otherNode
      * @param otherNode - reference to the Node at the other end of the Edge.
      * @see Node#removeEdge(Node)
      */
-    public void removeEdge(Node<T> otherNode) {
-        _edges.remove(otherNode._data.hashCode());
+    public Node<T> removeEdge(Node<T> otherNode) {
+        return _edges.remove(otherNode._data.hashCode());
     }
     
     /**

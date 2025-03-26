@@ -1,2 +1,5 @@
 # DataStructures24-25
-har har har har har har
+This is linsanity 
+hor hor hor hor
+what da heil
+
