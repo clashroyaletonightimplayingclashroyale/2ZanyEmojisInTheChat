@@ -1,4 +1,4 @@
-package Unit5.main;
+package Unit5.Graphs.main;
 
 public class Program {
 

@@ -1,4 +1,4 @@
-package Unit5.tests;
+package Unit5.Graphs.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,7 +6,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
-import Unit5.main.Graph;
+
+import Unit5.Graphs.main.Graph;
 
 public class Graphs0_tests extends TestsCore {
 
@@ -58,13 +59,13 @@ public class Graphs0_tests extends TestsCore {
      */
     @Test
     public void test_readGraph() throws FileNotFoundException {
-        Graph<String> g = readGraph("/Unit5/data/basic1.txt");
+        Graph<String> g = readGraph("/Unit5/Graphs/data/basic1.txt");
         
         // The Graph contains five Nodes in their initial state (0)
         // and their links described in the initial file.
         assertEquals(5, g.size());
         assertTrue(g.checkState(0));
-        assertSameGraph("/Unit5/data/basic1.txt", g);
+        assertSameGraph("/Unit5/Graphs/data/basic1.txt", g);
     }
 
     /**
@@ -100,8 +101,8 @@ public class Graphs0_tests extends TestsCore {
     @Test
     public void test_removeNode() throws FileNotFoundException {
         // Read the test graph (three linked nodes) from the file
-        Graph<String> g = readGraph("/Unit5/data/basic0.txt");
-        assertSameGraph("/Unit5/data/basic0.txt", g);
+        Graph<String> g = readGraph("/Unit5/Graphs/data/basic0.txt");
+        assertSameGraph("/Unit5/Graphs/data/basic0.txt", g);
         
         // Remove one node and verify the structure of updated Graph
         g.removeNode("three");

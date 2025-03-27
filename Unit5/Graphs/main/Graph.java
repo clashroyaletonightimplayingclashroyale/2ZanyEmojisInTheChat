@@ -1,4 +1,4 @@
-package Unit5.main;
+package Unit5.Graphs.main;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Class definition for a generic (Directed) Graph.
@@ -211,12 +213,34 @@ public class Graph<T extends Comparable<T>> {
      * Checks if the Graph is Directed Acyclic graph.
      * @return true if Graph is Directed Acyclic, false otherwise.
      */
-    public boolean isDAGraph() {
+    public boolean isDAGraph(){
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
 
         //use depth first search. Check whether there is a cycle through going through every possible combination and storing the path you've taken 
         //if at any point the current one's neighbor is one of the ones that you've already visited, there must be a cycle, rendering the function false.
+
+        //check whether it is directed
+        if(isUGraph()){
+            return false;
+        }
+
+        //check whether it is acyclic
+        Set<Node<T>> visited = new HashSet<>();
+        for(){
+
+        }
+    
+    }
+
+    public boolean helperMethod(Set<Node<T>> visited, Node<T> current){
+        visited.add(current);
+        Set<Node<T>> neighbors = current.getNeighbors();
+        for(Node<T> neighbor: neighbors){
+            helperMethod(visited, neighbor);
+        }
+  
+        return false;
     }
 
     /**
@@ -258,4 +282,64 @@ public class Graph<T extends Comparable<T>> {
         
         return output;
     }
+
+    /**
+     * Generates a map grouping all nodes in the graph by their out-degree.
+     * @return a map where each out-degree value in the graph (key) is associated
+     * with the set of nodes (value) having that out-degree.
+     */
+    public TreeMap<Integer, TreeSet<T>> getOutDegrees() {
+        // TODO: Implement this method according to
+        // TODO: the specification in javadocs
+        return null;
+    }
+
+    /**
+     * Generates a map grouping all nodes in the graph by their in-degree.
+     * @return a map where each in-degree value in the graph (key) is associated
+     * with the set of nodes (value) having that in-degree.
+     */
+    public TreeMap<Integer, TreeSet<T>> getInDegrees() {
+        // TODO: Implement this method according to
+        // TODO: the specification in javadocs
+        return null;
+    }
+
+    /**
+     * Generates the topological sort of this graph, where all nodes in the graph
+     * are grouped by their index in topological order. The first index is 0.
+     * @return a map associating each position in the topological sort (key)
+     * with the set of Nodes at that position (value). If the Graph is not DAG, the method 
+     * returns null.
+     */
+    public TreeMap<Integer, TreeSet<T>> topoSort() {
+        // TODO: Implement this method according to
+        // TODO: the specification in javadocs
+        return null;
+    }
+
+    /**
+     * Generates the count of the partitions in the graph.
+     * @return count of partitions.
+     */
+    public int countPartitions() {
+        // TODO: Implement this method according to
+        // TODO: the specification in javadocs
+        return 0;
+    }
+
+    /**
+     * Generates the Dijkstra distances between the node containing fromData and all the
+     * other nodes in the graph.
+     * @param fromData
+     * @return a map where the key is each Node in the Graph (given by its data)
+     * and the value is the Dijkstra distance from the <i>source</i> Node to that node.
+     */
+    public TreeMap<T, Integer> dijkstra(T fromData) {
+        // TODO: Implement this method according to
+        // TODO: the specification in javadocs
+        return null;
+    }
 }
+
+

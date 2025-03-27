@@ -1,4 +1,4 @@
-package Unit5.tests;
+package Unit5.Graphs.tests;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,19 +8,19 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import Unit5.main.Graph;
+import Unit5.Graphs.main.Graph;
 
 public class TestsCore {
     
     private Scanner getScanner(String graphFile) throws FileNotFoundException {
         URL url = this.getClass().getResource(graphFile);
-        File file = new File(url.getFile());
-        String filePath = file.getAbsolutePath();
+        String filePath = graphFile;
         try {
+            File file = new File(url.getFile());
+            filePath = file.getAbsolutePath();
             filePath = java.net.URLDecoder.decode(filePath, StandardCharsets.UTF_8.name());
         } catch (Exception e) {
         }
-        System.out.println(file.getAbsolutePath());
         return new Scanner(new File(filePath));
     }
     
