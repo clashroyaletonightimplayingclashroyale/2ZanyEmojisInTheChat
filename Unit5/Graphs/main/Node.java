@@ -1,7 +1,9 @@
 package Unit5.Graphs.main;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -41,6 +43,10 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
      * @see Node#reset()
      */
     private int _state;
+
+    public void setState(int i ){
+        this._state = i;
+    }
     
     /**
      * Constructs a new Node containing the given <i>data</i> object.
@@ -152,5 +158,26 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
     @Override
     public int compareTo(Node<T> other) {
         return _data.compareTo(other._data);
+    }
+
+    public boolean hasCycle(){
+        Queue<Node<T>> q = new LinkedList<Node<T>>();
+
+        q.add(this);
+
+        while(!q.isEmpty()){
+            Node<T> current = q.remove();
+            current.setState(1);
+    
+            for(Node<T> edge: current._edges.values()){
+                if (edge == this) {
+                    return true;
+                }
+                if(edge.getState() == 0){
+                    q.add(edge);
+                }
+            }
+        }
+        return false;
     }
 }

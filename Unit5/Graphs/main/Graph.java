@@ -214,33 +214,49 @@ public class Graph<T extends Comparable<T>> {
      * @return true if Graph is Directed Acyclic, false otherwise.
      */
     public boolean isDAGraph(){
-        // TODO: Implement this method according to
-        // TODO: the specification in javadocs
-
-        //use depth first search. Check whether there is a cycle through going through every possible combination and storing the path you've taken 
-        //if at any point the current one's neighbor is one of the ones that you've already visited, there must be a cycle, rendering the function false.
-
         //check whether it is directed
         if(isUGraph()){
             return false;
         }
 
         //check whether it is acyclic
-        Set<Node<T>> visited = new HashSet<>();
-        for(){
+        // use stack for checking recursively the stack
+        Stack<Node<T>> recursiveStack = new Stack();
 
+        for(Node<T> node: _nodes.values()){
+        //    setAll(0);
+        //    if(node.hasCycle()){
+        //     return false;
+        //    }
+            recursiveStack.clear();
+            if(helperMethod(recursiveStack, node)){
+                return false;
+            }
         }
-    
+
+        return true;
     }
 
-    public boolean helperMethod(Set<Node<T>> visited, Node<T> current){
-        visited.add(current);
-        Set<Node<T>> neighbors = current.getNeighbors();
-        for(Node<T> neighbor: neighbors){
-            helperMethod(visited, neighbor);
+    public boolean helperMethod(Stack<Node<T>> recursiveStack, Node<T> current){
+        //add to the recursivestack
+        recursiveStack.push(current);
+        //for all the neighbors, 
+        for(Node<T> neighbor: current.getNeighbors()){
+            //if the stack already has the neighbor, that means that it is going to be a loop
+            if(recursiveStack.contains(neighbor)){
+                return true;
+            }else{
+                helperMethod(recursiveStack, neighbor);
+            }
         }
-  
+
         return false;
+    }
+
+    public void setAll(int i) {
+        for (Node<T> node : _nodes.values()) {
+            node.setState(i);
+        }
     }
 
     /**
@@ -250,7 +266,13 @@ public class Graph<T extends Comparable<T>> {
     public int[][] getAdjacencyMatrix() {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
-        return null;
+
+        Set<Node<T>> nodes = (Set<Node<T>>) _nodes.values();
+
+        int[][] adjacencyMatrix = new int[nodes.size()][nodes.size()];
+        // for(int )
+
+        return adjacencyMatrix;
     }
 
     /**
