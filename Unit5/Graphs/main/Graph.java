@@ -1,6 +1,7 @@
 package Unit5.Graphs.main;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 /**
  * Class definition for a generic (Directed) Graph.
@@ -267,10 +269,18 @@ public class Graph<T extends Comparable<T>> {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
 
-        Set<Node<T>> nodes = (Set<Node<T>>) _nodes.values();
-
-        int[][] adjacencyMatrix = new int[nodes.size()][nodes.size()];
-        // for(int )
+        
+        //2d matrix for the adjacency matrix
+        int[][] adjacencyMatrix = new int[_nodes.size()][_nodes.size()];
+        //arraylist for convenience, this also determines the indexes of the adjacency matrix.
+        List<Node<T>> list = new ArrayList<>(_nodes.values());
+        for(int i = 0; i < list.size(); i++){
+            Node<T> current = list.get(i);
+            for(Node<T> neighbor : current.getNeighbors()){
+                int index = list.indexOf(neighbor);
+                adjacencyMatrix[i][index] = 1;
+            }
+        }
 
         return adjacencyMatrix;
     }
@@ -307,13 +317,25 @@ public class Graph<T extends Comparable<T>> {
 
     /**
      * Generates a map grouping all nodes in the graph by their out-degree.
+     * 
      * @return a map where each out-degree value in the graph (key) is associated
      * with the set of nodes (value) having that out-degree.
      */
+
+     /**
+     * The out-degree of a Node is the number of Edges leading out from it.
+     * It returns a TreeMap associating each out-degree count (key) to the
+     * set of Nodes having that out-degree (value).
+     */
     public TreeMap<Integer, TreeSet<T>> getOutDegrees() {
-        // TODO: Implement this method according to
-        // TODO: the specification in javadocs
-        return null;
+        TreeMap<Integer, TreeSet<T>> map = new TreeMap<>();
+        
+        for(Node<T> node : _nodes.values()){
+            int x = node.getNeighbors().size();
+            map.putIfAbsent(x, new TreeSet<T>());
+            map.get(x).add(node.getData());
+        }
+        return map;
     }
 
     /**
@@ -322,9 +344,24 @@ public class Graph<T extends Comparable<T>> {
      * with the set of nodes (value) having that in-degree.
      */
     public TreeMap<Integer, TreeSet<T>> getInDegrees() {
-        // TODO: Implement this method according to
-        // TODO: the specification in javadocs
-        return null;
+        Map<Node<T>, Integer> map = new HashMap<>();
+
+        for (Node<T> node : _nodes.values()) {
+            map.put(node, 0);
+        }
+
+        for(Node<T> node : _nodes.values()){
+            Set<Node<T>> neighbors = node.getNeighbors();
+            for(Node<T> neighbor: neighbors){
+                map.put(neighbor,map.get(neighbor)+1);
+            }
+        }
+        TreeMap<Integer, TreeSet<T>> sigma = new TreeMap<>();
+        for(Entry<Node<T>, Integer> set: map.entrySet()){
+            sigma.putIfAbsent(set.getValue(), new TreeSet<T>());
+            sigma.get(set.getValue()).add(set.getKey().getData());
+        }
+        return sigma;
     }
 
     /**

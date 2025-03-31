@@ -23,7 +23,7 @@ public class Graphs2_tests extends TestsCore {
      */
     @Test
     public void test_outDegrees() throws FileNotFoundException {
-        Graph<String> g = readGraph("/Graphs/data/medium1.txt");
+        Graph<String> g = readGraph("Unit5/Graphs/data/medium1.txt");
         TreeMap<Integer, TreeSet<String>> mapOutDeg = g.getOutDegrees();
         assertEquals("{0=[E], 1=[F], 2=[B, C], 3=[A, D]}", mapOutDeg.toString());
     }
@@ -37,7 +37,7 @@ public class Graphs2_tests extends TestsCore {
      */
     @Test
     public void test_inDegrees() throws FileNotFoundException {
-        Graph<String> g = readGraph("/Graphs/data/medium1.txt");
+        Graph<String> g = readGraph("Unit5/Graphs/data/medium1.txt");
         TreeMap<Integer, TreeSet<String>> mapInDeg = g.getInDegrees();
         assertEquals("{0=[A], 1=[D], 2=[B, F], 3=[C, E]}", mapInDeg.toString());
     }
