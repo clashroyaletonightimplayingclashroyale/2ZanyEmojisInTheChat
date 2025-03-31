@@ -226,14 +226,14 @@ public class Graph<T extends Comparable<T>> {
         Stack<Node<T>> recursiveStack = new Stack();
 
         for(Node<T> node: _nodes.values()){
-        //    setAll(0);
-        //    if(node.hasCycle()){
-        //     return false;
-        //    }
-            recursiveStack.clear();
-            if(helperMethod(recursiveStack, node)){
-                return false;
-            }
+           setAll(0);
+           if(node.hasCycle()){
+            return false;
+           }
+            // recursiveStack.clear();
+            // if(helperMethod(recursiveStack, node)){
+            //     return false;
+            // }
         }
 
         return true;

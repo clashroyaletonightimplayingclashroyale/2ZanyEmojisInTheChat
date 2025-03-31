@@ -1,14 +1,18 @@
 package Unit5.Graphs.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.lang.reflect.Field;
 
 import Unit5.Graphs.main.Graph;
+import Unit5.Graphs.main.Node;
 
 public class TestsCore {
     
@@ -46,14 +50,16 @@ public class TestsCore {
         Map<String, List<String>> map = new HashMap<String, List<String>>();
         while(input.hasNextLine()) {
             String line = input.nextLine();
-            String[] tokens = line.split(" ");
-            if (tokens.length < 2 || !tokens[1].equals(">")) {
+            String[] tokens = line.split("\\s>\\s");
+            if (tokens.length < 1) {
                 input.close();
                 throw new RuntimeException("Syntax error in parsing graph!");
             }
+            String nodeName = tokens[0].split(":")[0].trim();
+            String[] nodeNeighbors = tokens.length > 1 ? tokens[1].trim().split("\\s") : null;
             map.put(
-                    tokens[0],
-                    Arrays.asList(Arrays.copyOfRange(tokens, 2, tokens.length)));
+                    nodeName,
+                    nodeNeighbors != null ? Arrays.asList(nodeNeighbors) : null);
         }
         input.close();
         
@@ -65,9 +71,12 @@ public class TestsCore {
         
         for(Map.Entry<String, List<String>> kvp : map.entrySet()) {
             T fromNode = parseT(kvp.getKey(), realType);
-            for(String v : kvp.getValue()) {
-                T toNode = parseT(v, realType);
-                graph.addEdge(fromNode, toNode);
+            List<String> fromNodeNeighbors = kvp.getValue();
+            if (fromNodeNeighbors != null) {
+                for(String fromNodeNeighbor : fromNodeNeighbors) {
+                        T toNode = parseT(fromNodeNeighbor, realType);
+                        graph.addEdge(fromNode, toNode);
+                }
             }
         }
 
@@ -78,18 +87,58 @@ public class TestsCore {
         return readGraph(graphFile, String.class);
     }
     
-    public void assertSameGraph(String graphFile, Graph<?> g) throws FileNotFoundException {
-        String expected = "";
-        boolean first = true;
-        Scanner parser = getScanner(graphFile);
-        while(parser.hasNextLine()) {
-            if (!first) {
-                expected += "\n";
-            }
-            expected += parser.nextLine();
-            first = false;
+    public <T extends Comparable<T>> void assertSameGraph(String graphFile, Graph<T> g) throws FileNotFoundException {
+        try {
+            @SuppressWarnings("unchecked")
+            // extract the nodes map from the graph
+            Field field_nodes = Graph.class.getDeclaredField("_nodes");
+            field_nodes.setAccessible(true); // Override access control
+            Map<Integer, Node<T>> nodes = (Map<Integer, Node<T>>) field_nodes.get(g);
+            Class<T> dataClass = (nodes.size() == 0)
+                ? (Class<T>)String.class 
+                : (Class<T>)(nodes.values().iterator().next().getData().getClass());
+            
+            Graph<T> expectedGraph = readGraph(graphFile, dataClass );
+            assertEquals(expectedGraph.toString(), g.toString());
+        } catch(Exception e) {
+            fail(e.getMessage());
         }
-        parser.close();
-        assertEquals(expected, g.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Comparable<T>> void assertValidTopoSort(TreeMap<Integer, TreeSet<T>> topoMap, Graph<T> g2){
+        try {
+            // extract the nodes map from the graph
+            Field field_nodes = Graph.class.getDeclaredField("_nodes");
+            field_nodes.setAccessible(true); // Override access control
+            Map<Integer, Node<T>> nodes = (Map<Integer, Node<T>>) field_nodes.get(g2);
+
+            // reverse the topological sort map to get the node to index mapping
+            Map<Node<T>, Integer> nodeToIdx = new HashMap<>();
+            for (Integer topoIdx : topoMap.keySet()) {
+                TreeSet<T> labelAtIdx = topoMap.get(topoIdx);
+                for (T label : labelAtIdx) {
+                    Node<T> node = nodes.get(label.hashCode());
+                    nodeToIdx.put(node, topoIdx); // Map each node to its index in the topological sort
+                }
+            }
+
+            // for each node in the map...
+            for (Node<T> fromNode : nodes.values()) {
+                Field field_edges = Node.class.getDeclaredField("_edges");
+                field_edges.setAccessible(true); // Override access control
+                Map<Integer, Node<T>> edges = (Map<Integer, Node<T>>) field_edges.get(fromNode);
+                // ... and for each neighbor of that node...
+                for (Node<T> toNode : edges.values()) {
+                    // ... get the nodes topological sort index
+                    Integer fromNodeIdx = nodeToIdx.get(fromNode);
+                    Integer toNodeIdx = nodeToIdx.get(toNode);
+                    // ... and check that the fromNode index is less than the toNode index
+                    assertTrue(fromNodeIdx < toNodeIdx); 
+                }
+            }
+        } catch (Exception e) {
+            fail();
+        }
     }
 }
