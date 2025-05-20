@@ -1,4 +1,4 @@
-package Unit5.Graphs.tests;
+package Graphs.tests;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,8 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.lang.reflect.Field;
 
-import Unit5.Graphs.main.Graph;
-import Unit5.Graphs.main.Node;
+import Graphs.main.Graph;
+import Graphs.main.Node;
 
 public class TestsCore {
     

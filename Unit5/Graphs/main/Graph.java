@@ -1,4 +1,4 @@
-package Unit5.Graphs.main;
+package Graphs.main;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -372,10 +372,57 @@ public class Graph<T extends Comparable<T>> {
      * returns null.
      */
     public TreeMap<Integer, TreeSet<T>> topoSort() {
-        // TODO: Implement this method according to
-        // TODO: the specification in javadocs
-        return null;
+        if (!isDAGraph()) {
+            return null;
+        }
+
+        Map<T, Integer> inDegree = new HashMap<>();
+        TreeMap<Integer, TreeSet<T>> indegreeMap = getInDegrees();
+
+        for (Map.Entry<Integer, TreeSet<T>> entry : indegreeMap.entrySet()) {
+            int degree = entry.getKey();
+            for (T data : entry.getValue()) {
+                inDegree.put(data, degree);
+            }
+        }
+        Map<T, Node<T>> dataToNode = new HashMap<>();
+        for (Node<T> node : _nodes.values()) {
+            dataToNode.put(node.getData(), node);
+        }
+
+        Queue<T> queue = new LinkedList<>();
+        for (Map.Entry<T, Integer> entry : inDegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.add(entry.getKey());
+            }
+        }
+
+        TreeMap<Integer, TreeSet<T>> sorted = new TreeMap<>();
+        int level = 0;
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            TreeSet<T> group = new TreeSet<>();
+            for (int i = 0; i < size; i++) {
+                T currentData = queue.poll();
+                group.add(currentData);
+
+                Node<T> currentNode = dataToNode.get(currentData);
+                for (Node<T> neighbor : currentNode.getNeighbors()) {
+                    T neighborData = neighbor.getData();
+                    int updatedInDegree = inDegree.get(neighborData) - 1;
+                    inDegree.put(neighborData, updatedInDegree);
+                    if (updatedInDegree == 0) {
+                        queue.add(neighborData);
+                    }
+                }
+            }
+            sorted.put(level++, group);
+        }
+        return sorted;
     }
+
+
 
     /**
      * Generates the count of the partitions in the graph.
@@ -384,7 +431,38 @@ public class Graph<T extends Comparable<T>> {
     public int countPartitions() {
         // TODO: Implement this method according to
         // TODO: the specification in javadocs
-        return 0;
+        
+        int partitionCount = 0;
+        for(Node<T> current: _nodes.values()){
+            if(current.getState() != 1){
+                partitionCount++;
+                dfs(current);
+            }
+        }
+        return partitionCount;
+    
+    }
+
+    public Set<Node<T>> getIncomingNeighbors(Node<T> target) {
+        Set<Node<T>> incoming = new HashSet<>();
+        for (Node<T> node : _nodes.values()) {
+            if (node.getNeighbors().contains(target)) {
+                incoming.add(node);
+            }
+        }
+        return incoming;
+    }    
+
+    public void dfs(Node<T> current){
+        current.setState(1);
+        Set<Node<T>> allNeighbors = new HashSet<>();
+        allNeighbors.addAll(current.getNeighbors());
+        allNeighbors.addAll(getIncomingNeighbors(current));
+        for(Node<T> neighbor: allNeighbors){
+            if(neighbor.getState() == 0){
+                dfs(neighbor);
+            }
+        }
     }
 
     /**
@@ -395,9 +473,44 @@ public class Graph<T extends Comparable<T>> {
      * and the value is the Dijkstra distance from the <i>source</i> Node to that node.
      */
     public TreeMap<T, Integer> dijkstra(T fromData) {
-        // TODO: Implement this method according to
-        // TODO: the specification in javadocs
-        return null;
+        setAll(0);
+        TreeMap<T, Integer> distances = new TreeMap<>();
+
+        //initialize all distances as unreachable
+        for (Node<T> node : _nodes.values()) {
+            T data = node.getData();
+            distances.put(data, -1);
+        }        
+        //distance from source to itself is 0
+        Node<T> sourceNode = null;
+        for(Node<T> node : _nodes.values()){
+            if(node.getData().equals(fromData)){
+                sourceNode = node;
+                break;
+            }
+        }
+        distances.put(fromData, 0);
+        sourceNode.setState(1);  
+
+        //create queue
+        Queue<Node<T>> queue = new LinkedList<>();
+        queue.add(sourceNode);
+        
+        while(!queue.isEmpty()){
+            Node<T> removed = queue.poll();
+            int currentDist = distances.get(removed.getData());
+            for(Node<T> neighbor : removed.getNeighbors()){
+                if(neighbor.getState() == 0){
+                    distances.put(neighbor.getData(), currentDist+1);
+                    neighbor.setState(1);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+
+
+        return distances;
     }
 }
 

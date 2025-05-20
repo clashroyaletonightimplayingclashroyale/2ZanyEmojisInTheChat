@@ -1,4 +1,4 @@
-package Unit5.Graphs.tests;
+package Graphs.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
-import Unit5.Graphs.main.Graph;
+import Graphs.main.Graph;
 
 public class Graphs3_tests extends TestsCore {
 

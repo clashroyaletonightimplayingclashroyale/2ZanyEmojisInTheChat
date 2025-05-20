@@ -1,4 +1,4 @@
-package Unit5.Graphs.main;
+package Graphs.main;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -180,4 +180,5 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
         }
         return false;
     }
+
 }

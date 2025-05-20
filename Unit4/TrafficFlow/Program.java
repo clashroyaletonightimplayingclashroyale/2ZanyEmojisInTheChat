@@ -73,6 +73,17 @@ public class Program {
         }
     };
 
+    // private static KeyHook collision = (KeyEvent keyEvent, Object[] args) ->{
+    //     MapCanvas mc = (MapCanvas) args[0];
+    //     Set<String> overlaidRoutes = mc.getOverlays();
+
+        
+    //     if(overlaidRoutes.size() ==1){
+    //         //this means that its just the overlaid route 
+    //     }
+    // }
+
+
     public static void main(String[] args) throws IOException, InterruptedException {
         // create a MapCanvas object and load it with an intersection image
         MapCanvas mapCanvas = new MapCanvas("Ravenna.jpg");

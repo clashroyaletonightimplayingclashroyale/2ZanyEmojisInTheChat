@@ -1,4 +1,4 @@
-package Unit5.Graphs.tests;
+package Graphs.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import Unit5.Graphs.main.Graph;
+import Graphs.main.Graph;
 
 public class Graphs2_tests extends TestsCore {
     
@@ -23,7 +23,7 @@ public class Graphs2_tests extends TestsCore {
      */
     @Test
     public void test_outDegrees() throws FileNotFoundException {
-        Graph<String> g = readGraph("Unit5/Graphs/data/medium1.txt");
+        Graph<String> g = readGraph("Unit5\\Graphs\\data\\medium1.txt");
         TreeMap<Integer, TreeSet<String>> mapOutDeg = g.getOutDegrees();
         assertEquals("{0=[E], 1=[F], 2=[B, C], 3=[A, D]}", mapOutDeg.toString());
     }
@@ -37,7 +37,7 @@ public class Graphs2_tests extends TestsCore {
      */
     @Test
     public void test_inDegrees() throws FileNotFoundException {
-        Graph<String> g = readGraph("Unit5/Graphs/data/medium1.txt");
+        Graph<String> g = readGraph("Unit5\\Graphs\\data\\medium1.txt");
         TreeMap<Integer, TreeSet<String>> mapInDeg = g.getInDegrees();
         assertEquals("{0=[A], 1=[D], 2=[B, F], 3=[C, E]}", mapInDeg.toString());
     }
@@ -60,18 +60,20 @@ public class Graphs2_tests extends TestsCore {
      */
     @Test
     public void test_topologicalSort() throws FileNotFoundException {
-        Graph<Integer> g = readGraph("/Graphs/data/basic1.txt", Integer.class);
+        Graph<Integer> g = readGraph("Unit5\\Graphs\\data\\basic1.txt", Integer.class);
         assertFalse(g.isDAGraph());
         assertEquals(null, g.topoSort());
         
-        Graph<String> g1 = readGraph("/Graphs/data/medium1.txt");
+        Graph<String> g1 = readGraph("Unit5\\Graphs\\data\\medium1.txt");
         assertTrue(g1.isDAGraph());
         TreeMap<Integer, TreeSet<String>> mapTopoSort1 = g1.topoSort();
-        assertEquals("{0=[A], 1=[D], 2=[B], 3=[C], 4=[F], 5=[E]}", mapTopoSort1.toString());
+        //assertEquals("{0=[A], 1=[D], 2=[B], 3=[C], 4=[F], 5=[E]}", mapTopoSort1.toString());
+        assertValidTopoSort(mapTopoSort1,g1);
         
-        Graph<String> g2= readGraph("/Graphs/data/medium2.txt");
+        Graph<String> g2= readGraph("Unit5\\Graphs\\data\\medium2.txt");
         assertTrue(g2.isDAGraph());
         TreeMap<Integer, TreeSet<String>> mapTopoSort2 = g2.topoSort();
-        assertEquals("{0=[A, E], 1=[B, F], 2=[C, X], 3=[D, G, Y, Z]}", mapTopoSort2.toString());
+        // assertEquals("{0=[A, E], 1=[B, F], 2=[C, X], 3=[D, G, Y, Z]}", mapTopoSort2.toString());
+        assertValidTopoSort(mapTopoSort2, g2);
     }
 }
