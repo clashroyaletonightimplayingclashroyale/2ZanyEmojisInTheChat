@@ -2,9 +2,11 @@ package TrafficFlow;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -14,7 +16,8 @@ import edu.ftdev.Map.MapCanvas;
 
 public class Program {
     
-    private static Map<Character, Set<String>> _locationsMap = new HashMap<Character, Set<String>>();
+    private static Map<Character, Queue<String>> _locationsMap = new HashMap<Character, Queue<String>>();
+    private static Queue<Set<String>> trafficFlowSubsets = new LinkedList<>();
 
     private static void buildLocationMap(MapCanvas mc){
 
@@ -25,11 +28,11 @@ public class Program {
                 char sigma = route.charAt(0);    
 
                 if(!_locationsMap.containsKey(sigma)){
-                    Set<String> har = new HashSet<String>();
+                    Queue<String> har = new LinkedList<String>();
                     har.add(route);
                     _locationsMap.put(sigma, har);
                 }else{
-                    Set<String> gotten = _locationsMap.get(sigma);
+                    Queue<String> gotten = _locationsMap.get(sigma);
                     gotten.add(route);
                 }  
         }
@@ -65,24 +68,95 @@ public class Program {
     private static KeyHook onKeyGeneric = (KeyEvent keyEvent, Object[] args) ->{
         MapCanvas mc = (MapCanvas) args[0];
         char key = Character.toUpperCase(keyEvent.getKeyChar());
-        //System.out.println("You pressed " + key +"!");
         mc.clear();
-        Set<String> har = _locationsMap.get(key);
-        if(har != null){
-            mc.setOverlays(har);
+        if(_locationsMap.get(key) != null){
+            Queue<String> routes = _locationsMap.get(key);
+            if (routes.peek() != null) {
+                mc.setOverlays(routes.peek());
+                routes.add(routes.remove());
+            }
+        }
+       
+    };
+    
+    //pt 2
+    private static KeyHook collisionOnX = (KeyEvent keyEvent, Object[] args) ->{
+        MapCanvas mc = (MapCanvas) args[0];
+        //make it list so that its ez to access the one element
+        List<String> currentRoutes = new ArrayList<>(mc.getOverlays());
+        if(currentRoutes.size()==0){
+            System.out.println("Select a path");
+        }else if(currentRoutes.size() == 1){
+            //this means that its just the one route 
+            String single = currentRoutes.get(0);
+            //for all the available routes,
+            List<String> allRoutes = new ArrayList<>(mc.getRoutes());
+            Set<String> toBeOverlayed = new HashSet<String>();
+            toBeOverlayed.add(single);
+            for(String route: allRoutes){
+                //if they collide, add it to the to be overlayed
+                if(!route.equals(single) && mc.collide(single, route)){
+                    toBeOverlayed.add(route);
+                }
+            }
+            //overlay it
+            mc.setOverlays(toBeOverlayed);
+        }else{
+            //else, only display the one route 
+            String original = currentRoutes.get(0);
+            mc.setOverlays(original);
         }
     };
 
-    // private static KeyHook collision = (KeyEvent keyEvent, Object[] args) ->{
-    //     MapCanvas mc = (MapCanvas) args[0];
-    //     Set<String> overlaidRoutes = mc.getOverlays();
+    //pt 3
+    private static void greedy(int label, Queue<String> unlabeledQueue, MapCanvas map, Map<Integer, Set<String>> subsets) {
+        Set<String> currentLabelSet = new HashSet<>();
+        Queue<String> requeue = new LinkedList<>();
+        while (!unlabeledQueue.isEmpty()) {
+            String node = unlabeledQueue.remove();
+            boolean hasCollision = false;
+            for (String labeledNode : currentLabelSet) {
+                if (map.collide(node, labeledNode)) {
+                    hasCollision = true;
+                    break;
+                }
+            }
+            if (!hasCollision) {
+                currentLabelSet.add(node);
+            } else {
+                requeue.add(node);
+            }
+        }
+        subsets.put(label, currentLabelSet);
+        unlabeledQueue.addAll(requeue); 
+    }    
 
-        
-    //     if(overlaidRoutes.size() ==1){
-    //         //this means that its just the overlaid route 
-    //     }
-    // }
+    //helper method to find collisions:
 
+    private static KeyHook graphColoring = (KeyEvent KeyEvent, Object[] args) ->{
+        MapCanvas mc = (MapCanvas) args[0];
+
+        Map<Integer, Set<String>> subsets = new HashMap<>();
+        Queue<String> unLabeledQueue = new LinkedList<>(mc.getRoutes());
+        int label = 1;
+        while(!unLabeledQueue.isEmpty()){
+            greedy(label, unLabeledQueue,mc, subsets);
+            label++;
+        }
+        //add to the trafficflowsubset if not initialized
+        if(trafficFlowSubsets.size()== 0){
+            for (Map.Entry<Integer, Set<String>> set : subsets.entrySet()) {
+                trafficFlowSubsets.add(set.getValue());
+            }
+        }
+        System.out.println(subsets);
+        //you can now traverse through it
+        Set<String> toBeOverlayed = trafficFlowSubsets.poll();
+        mc.setOverlays(toBeOverlayed);
+        trafficFlowSubsets.add(toBeOverlayed);
+    };
+
+  
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // create a MapCanvas object and load it with an intersection image
@@ -94,13 +168,18 @@ public class Program {
         // registers the key T with the method _onKeyT
         mapCanvas.setKeyHook('T', _onKeyT, mapCanvas);
         Queue<String> routes = new LinkedList<String>(mapCanvas.getRoutes());
+
+        //parts 2 and 3
         mapCanvas.setKeyHook(KeyEvent.VK_Q, onKeyQ, mapCanvas, routes);
+        mapCanvas.setKeyHook(KeyEvent.VK_X, collisionOnX, mapCanvas);
+        mapCanvas.setKeyHook(KeyEvent.VK_W, graphColoring, mapCanvas);
 
         //registers A-E with generic keyhook to reduce redundancy.
         char[] letters = {'A','B','C','D','E'};
         for(char letter: letters){
             mapCanvas.setKeyHook(letter,onKeyGeneric, mapCanvas);
         }
+    
         
         // opens the GUI window
         mapCanvas.open();
@@ -109,7 +188,7 @@ public class Program {
         mapCanvas.breakStep();
 
         // register the 'A', 'B', 'C', .. key strokes for demo route highlights
-        mapCanvas.setDemoKeyHooks(true);
+        mapCanvas.setDemoKeyHooks(false);
 
         // break jump-level execution
         mapCanvas.breakJump();
